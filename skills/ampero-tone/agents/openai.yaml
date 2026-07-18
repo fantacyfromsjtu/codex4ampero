@@ -1,0 +1,7 @@
+interface:
+  display_name: "Ampero Tone"
+  short_description: "用 Codex 安全规划和调节 Ampero II 音色"
+  default_prompt: "Use $ampero-tone to inspect and safely refine my connected Ampero II Stomp tone."
+
+policy:
+  allow_implicit_invocation: true

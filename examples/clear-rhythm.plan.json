@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "title": "Clear rhythm starting point",
+  "reason": "Use a lower-gain amp starting point with conservative gain and tone values.",
+  "actions": [
+    {
+      "type": "set_model",
+      "slot": 3,
+      "effect": {
+        "name": "Tweed Lux",
+        "category": "AMP"
+      },
+      "enabled": true
+    },
+    {
+      "type": "set_parameter",
+      "slot": 3,
+      "effect": {
+        "name": "Tweed Lux",
+        "category": "AMP"
+      },
+      "parameter": "Volume",
+      "value": 30
+    }
+  ]
+}

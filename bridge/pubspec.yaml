@@ -1,0 +1,10 @@
+name: ampero_bridge
+description: Minimal Dart FFI bridge for the locally installed Ampero II editor DLL.
+version: 0.1.0
+publish_to: none
+
+environment:
+  sdk: ">=3.3.0 <4.0.0"
+
+dependencies:
+  ffi: ^2.1.4

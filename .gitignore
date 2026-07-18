@@ -1,0 +1,17 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+.tools/
+.dart_tool/
+build/
+dist/
+*.log
+*.journal.json
+.env
+.idea/
+.vscode/
