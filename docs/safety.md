@@ -3,6 +3,7 @@
 - Preview is the default mode, including when `plan apply` is called without execution flags.
 - Actual writes require both `--execute` and the literal confirmation token `APPLY`.
 - Rollback writes require both `--execute` and the literal token `ROLLBACK`.
+- Preset save requires a successful apply journal and the target-specific token `SAVE:Axx-y`.
 - The official editor process blocks direct connection by default.
 - The Codex Skill wrapper isolates native-DLL calls in a worker process and forcibly terminates blocked scans after a bounded timeout.
 - Effect and parameter names must exist in the installed catalog.
@@ -11,6 +12,7 @@
 - Parameter/model changes attempt a device preflight read before writing.
 - Each successful preflight result is persisted to a journal before the corresponding write.
 - Mid-plan failures trigger reverse-order rollback using journal entries already captured.
-- Unknown, firmware, factory-reset, delete, and preset-save commands are not exposed.
+- Unknown, firmware, factory-reset, delete, and global-output commands are not exposed.
+- Preset save is isolated from tone plans, cannot be rolled back, records an exact-target preflight, requires the official save response, and is never executed automatically after apply.
 
 `--allow-unverified-reads` exists only for controlled protocol testing. It can make rollback incomplete and must not be used automatically by the Skill.

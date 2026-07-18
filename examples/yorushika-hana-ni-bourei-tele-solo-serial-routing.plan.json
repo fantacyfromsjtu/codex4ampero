@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "title": "Yorushika Hana ni Bourei solo serial routing fix",
+  "reason": "Connect the existing compressor, drive, amp, cab, chorus, delay, and plate reverb in one serial signal path without changing their models or parameter values.",
+  "target_patch": "A50-1",
+  "select_target_patch": true,
+  "actions": [
+    {
+      "type": "set_routing_template",
+      "template": "Serial"
+    }
+  ]
+}

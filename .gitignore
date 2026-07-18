@@ -2,6 +2,8 @@ __pycache__/
 *.py[cod]
 *.egg-info/
 .pytest_cache/
+.coverage
+htmlcov/
 .mypy_cache/
 .ruff_cache/
 .venv/
@@ -12,6 +14,9 @@ build/
 dist/
 *.log
 *.journal.json
+.ampero_journals/
 .env
 .idea/
 .vscode/
+.DS_Store
+Thumbs.db

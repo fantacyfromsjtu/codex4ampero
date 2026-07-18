@@ -1,0 +1,294 @@
+{
+  "schema_version": 1,
+  "title": "Yorushika Hana ni Bourei Tele overdrive solo refinement",
+  "reason": "Replace the current low-gain clean-leaning drive structure with a researched medium-overdrive lead tone for a Fender Hybrid II Telecaster into FRFR or headphones, while preserving pick dynamics and tightening modulation and ambience.",
+  "research": {
+    "target": "Yorushika - Hana ni Bourei studio-style overdriven guitar solo starting point",
+    "researched_on": "2026-07-18",
+    "confidence": "medium",
+    "facts": [
+      "A public transcription labels the relevant electric-guitar part as overdriven guitar rather than clean guitar.",
+      "Published tempo references place the song around 180 BPM, making the existing 333 ms delay close to a quarter-note repeat.",
+      "Public n-buna rig summaries repeatedly associate his broader guitar setup with Fender amplification and BOSS Blues Driver variants, but do not prove the exact studio chain for this song.",
+      "The official HOTONE algorithm documentation describes Dr. Blues as a dynamic, warm blues overdrive based on a widely used blues overdrive and its PHAT-modified variant.",
+      "The installed Ampero II v1.0.8 catalog exposes Dr. Blues Gain, Tone, and Volume parameters from 0 to 100."
+    ],
+    "inferences": [
+      "A moderate Dr. Blues stage into the existing Black Twin is a closer starting point than the current low-gain Prince of Drive setting.",
+      "Raising drive saturation and amp input volume moderately should create audible overdrive without turning the preset into a high-gain rock lead.",
+      "Bypassing the always-on chorus and reducing delay and reverb density should move the overdriven dry note forward in the mix.",
+      "A restrained high cut and stronger amp midrange should reduce Telecaster edge while retaining articulation."
+    ],
+    "limitations": [
+      "No isolated master-recording guitar stem was available for direct spectral or gain-envelope comparison.",
+      "General artist rig reports are supporting context and are not proof of the exact equipment used on Hana ni Bourei.",
+      "The result remains a starting point until compared through the user's actual monitoring level and pickup selection."
+    ],
+    "sources": [
+      {
+        "title": "Hana Ni Bourei Guitar Tab",
+        "source_type": "transcription",
+        "tier": 2,
+        "finding": "The electric-guitar part is identified as overdriven guitar.",
+        "reference": "songsterr.com"
+      },
+      {
+        "title": "Hana ni Bourei tempo reference",
+        "source_type": "technical_reference",
+        "tier": 2,
+        "finding": "The song is listed at approximately 180 BPM.",
+        "reference": "songbpm.com"
+      },
+      {
+        "title": "BOSS BD-2W Blues Driver official product documentation",
+        "source_type": "manufacturer",
+        "tier": 1,
+        "finding": "The Blues Driver family is documented as dynamic overdrive, with the custom voicing adding body and sustain.",
+        "reference": "boss.info"
+      },
+      {
+        "title": "HOTONE CDCM II effects list",
+        "source_type": "manufacturer",
+        "tier": 1,
+        "finding": "Dr. Blues is documented as a warm, touch-sensitive blues overdrive based on a classic blues overdrive and PHAT-modified version.",
+        "reference": "hotoneaudio.com"
+      },
+      {
+        "title": "n-buna equipment summaries",
+        "source_type": "technical_reference",
+        "tier": 2,
+        "finding": "Broader rig summaries report Fender amplification and multiple Blues Driver variants in n-buna's equipment history.",
+        "reference": "crossbridgeguitar.com and adlibweb.com"
+      },
+      {
+        "title": "Ampero II installed algorithm catalog v1.0.8",
+        "source_type": "local_catalog",
+        "tier": 1,
+        "finding": "All proposed model and parameter names and ranges were checked against the locally installed official editor catalog.",
+        "reference": "v1.0.8_alg_data.json"
+      }
+    ]
+  },
+  "save_preview_name": "Hana Solo",
+  "target_patch": "A50-1",
+  "select_target_patch": true,
+  "actions": [
+    {
+      "type": "set_routing_template",
+      "template": "Serial"
+    },
+    {
+      "type": "set_parameter",
+      "slot": 0,
+      "effect": {
+        "name": "Comparoma 4",
+        "category": "DYN"
+      },
+      "parameter": "Sustain",
+      "value": 40,
+      "expected_before": 30
+    },
+    {
+      "type": "set_parameter",
+      "slot": 0,
+      "effect": {
+        "name": "Comparoma 4",
+        "category": "DYN"
+      },
+      "parameter": "Attack",
+      "value": 62,
+      "expected_before": 65
+    },
+    {
+      "type": "set_model",
+      "slot": 1,
+      "effect": {
+        "name": "Dr. Blues",
+        "category": "DRV"
+      },
+      "enabled": true
+    },
+    {
+      "type": "set_parameter",
+      "slot": 1,
+      "effect": {
+        "name": "Dr. Blues",
+        "category": "DRV"
+      },
+      "parameter": "Gain",
+      "value": 58
+    },
+    {
+      "type": "set_parameter",
+      "slot": 1,
+      "effect": {
+        "name": "Dr. Blues",
+        "category": "DRV"
+      },
+      "parameter": "Tone",
+      "value": 47
+    },
+    {
+      "type": "set_parameter",
+      "slot": 1,
+      "effect": {
+        "name": "Dr. Blues",
+        "category": "DRV"
+      },
+      "parameter": "Volume",
+      "value": 58
+    },
+    {
+      "type": "set_parameter",
+      "slot": 2,
+      "effect": {
+        "name": "Black Twin",
+        "category": "AMP"
+      },
+      "parameter": "Volume",
+      "value": 42,
+      "expected_before": 32
+    },
+    {
+      "type": "set_parameter",
+      "slot": 2,
+      "effect": {
+        "name": "Black Twin",
+        "category": "AMP"
+      },
+      "parameter": "Bass",
+      "value": 40,
+      "expected_before": 44
+    },
+    {
+      "type": "set_parameter",
+      "slot": 2,
+      "effect": {
+        "name": "Black Twin",
+        "category": "AMP"
+      },
+      "parameter": "Middle",
+      "value": 62,
+      "expected_before": 52
+    },
+    {
+      "type": "set_parameter",
+      "slot": 2,
+      "effect": {
+        "name": "Black Twin",
+        "category": "AMP"
+      },
+      "parameter": "Treble",
+      "value": 44,
+      "expected_before": 42
+    },
+    {
+      "type": "set_parameter",
+      "slot": 3,
+      "effect": {
+        "name": "Black Dlx 1x12 B",
+        "category": "CAB"
+      },
+      "parameter": "Low Cut",
+      "value": 95,
+      "expected_before": 90
+    },
+    {
+      "type": "set_parameter",
+      "slot": 3,
+      "effect": {
+        "name": "Black Dlx 1x12 B",
+        "category": "CAB"
+      },
+      "parameter": "Hi Cut",
+      "value": 7200,
+      "expected_before": 8000
+    },
+    {
+      "type": "set_model",
+      "slot": 4,
+      "effect": {
+        "name": "3D Chorus",
+        "category": "MOD"
+      },
+      "enabled": false
+    },
+    {
+      "type": "set_parameter",
+      "slot": 5,
+      "effect": {
+        "name": "Analog Delay M",
+        "category": "DLY"
+      },
+      "parameter": "Mix",
+      "value": 14,
+      "expected_before": 17
+    },
+    {
+      "type": "set_parameter",
+      "slot": 5,
+      "effect": {
+        "name": "Analog Delay M",
+        "category": "DLY"
+      },
+      "parameter": "Feedback",
+      "value": 20,
+      "expected_before": 22
+    },
+    {
+      "type": "set_parameter",
+      "slot": 6,
+      "effect": {
+        "name": "Small Plate",
+        "category": "RVB"
+      },
+      "parameter": "Mix",
+      "value": 14,
+      "expected_before": 18
+    },
+    {
+      "type": "set_parameter",
+      "slot": 6,
+      "effect": {
+        "name": "Small Plate",
+        "category": "RVB"
+      },
+      "parameter": "Pre Delay",
+      "value": 28,
+      "expected_before": 25
+    },
+    {
+      "type": "set_parameter",
+      "slot": 6,
+      "effect": {
+        "name": "Small Plate",
+        "category": "RVB"
+      },
+      "parameter": "Decay",
+      "value": 40,
+      "expected_before": 48
+    },
+    {
+      "type": "set_parameter",
+      "slot": 6,
+      "effect": {
+        "name": "Small Plate",
+        "category": "RVB"
+      },
+      "parameter": "Hi Damp",
+      "value": 62,
+      "expected_before": 65
+    },
+    {
+      "type": "set_parameter",
+      "slot": 6,
+      "effect": {
+        "name": "Small Plate",
+        "category": "RVB"
+      },
+      "parameter": "Mod",
+      "value": 10,
+      "expected_before": 18
+    }
+  ]
+}

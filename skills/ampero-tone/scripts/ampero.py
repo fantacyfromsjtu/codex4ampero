@@ -7,13 +7,18 @@ from pathlib import Path
 
 
 def _project_root() -> Path:
-    configured = os.environ.get("VIBE_AMPERO_ROOT")
+    configured = os.environ.get("CODEX4AMPERO_ROOT") or os.environ.get(
+        "VIBE_AMPERO_ROOT"
+    )
     if configured:
         return Path(configured)
     local_root = Path(__file__).resolve().parents[3]
     if (local_root / "src" / "ampero_control").is_dir():
         return local_root
-    return Path(r"E:\vibe_ampere")
+    raise RuntimeError(
+        "codex4ampero repository was not found. Re-run scripts/install-skill.ps1 "
+        "or set CODEX4AMPERO_ROOT to the cloned repository path."
+    )
 
 
 def _timeout_seconds(arguments) -> float:
@@ -23,6 +28,12 @@ def _timeout_seconds(arguments) -> float:
         return 10.0
     if "device" in arguments and "snapshot" in arguments:
         return 30.0
+    if "plan" in arguments and "apply" in arguments:
+        return 90.0
+    if "plan" in arguments and "rollback" in arguments:
+        return 60.0
+    if "plan" in arguments and "save" in arguments:
+        return 45.0
     return 30.0
 
 

@@ -1,7 +1,9 @@
 import struct
 
 
-def build_current_preset_fixture() -> bytes:
+def build_current_preset_fixture(
+    *, split_node_address: int = 2, mix_node_address: int = 7
+) -> bytes:
     slot_num = 2
     scene_num = 1
     parameter_num = 25
@@ -31,12 +33,25 @@ def build_current_preset_fixture() -> bytes:
         + bytes(2 + slot_num + slot_num * parameter_num)
         + _text("Scene 1", 8)
     )
+    source_parameters = [0.0] * (2 * 7 * 4)
+    routing = (
+        struct.pack("<2h", 0, 1)
+        + struct.pack("<2h", 0, 1)
+        + struct.pack(f"<{len(source_parameters)}f", *source_parameters)
+        + struct.pack(f"<{len(source_parameters)}f", *source_parameters)
+        + struct.pack(
+            "<bbbb", split_node_address, mix_node_address, 0, 0
+        )
+        + struct.pack("<10f", *([0.0] * 10))
+        + struct.pack("<10f", *([0.0] * 10))
+    )
     return (
         _int32(7)
         + _block(0, define)
         + _block(1, info)
         + _block(4, effect)
         + _block(5, scene)
+        + _block(6, routing)
     )
 
 

@@ -1,6 +1,6 @@
-name: ampero_bridge
-description: Minimal Dart FFI bridge for the locally installed Ampero II editor DLL.
-version: 0.1.0
+name: codex4ampero_bridge
+description: Minimal Dart FFI bridge used internally by codex4ampero.
+version: 0.2.0
 publish_to: none
 
 environment:

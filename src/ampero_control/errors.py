@@ -22,6 +22,14 @@ class DeviceTimeoutError(AmperoError):
     """Raised when a device response does not arrive before the timeout."""
 
 
+class DeviceWriteVerificationError(AmperoError):
+    """Raised when a write cannot be confirmed by an immediate device readback."""
+
+
+class PatchLocationUnknownError(AmperoError):
+    """Raised when the device explicitly reports an unknown current patch index."""
+
+
 class PlanValidationError(AmperoError):
     """Raised when a requested change is outside the supported safe subset."""
 

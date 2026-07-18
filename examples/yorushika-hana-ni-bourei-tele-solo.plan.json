@@ -1,0 +1,476 @@
+{
+  "schema_version": 1,
+  "title": "Yorushika Hana ni Bourei Tele solo starting point",
+  "reason": "For a Fender Hybrid II Telecaster into FRFR/headphones: preserve single-coil articulation, add smooth low-gain sustain, tame upper-edge harshness, and use restrained modulation, delay, and plate reverb.",
+  "target_patch": "A50-1",
+  "select_target_patch": true,
+  "actions": [
+    {
+      "type": "set_model",
+      "slot": 0,
+      "effect": {
+        "name": "Comparoma 4",
+        "category": "DYN"
+      },
+      "enabled": true
+    },
+    {
+      "type": "set_parameter",
+      "slot": 0,
+      "effect": {
+        "name": "Comparoma 4",
+        "category": "DYN"
+      },
+      "parameter": "Sustain",
+      "value": 30
+    },
+    {
+      "type": "set_parameter",
+      "slot": 0,
+      "effect": {
+        "name": "Comparoma 4",
+        "category": "DYN"
+      },
+      "parameter": "Attack",
+      "value": 65
+    },
+    {
+      "type": "set_parameter",
+      "slot": 0,
+      "effect": {
+        "name": "Comparoma 4",
+        "category": "DYN"
+      },
+      "parameter": "Output",
+      "value": 50
+    },
+    {
+      "type": "set_parameter",
+      "slot": 0,
+      "effect": {
+        "name": "Comparoma 4",
+        "category": "DYN"
+      },
+      "parameter": "Clipping",
+      "value": 5
+    },
+    {
+      "type": "set_model",
+      "slot": 1,
+      "effect": {
+        "name": "Prince of Drive",
+        "category": "DRV"
+      },
+      "enabled": true
+    },
+    {
+      "type": "set_parameter",
+      "slot": 1,
+      "effect": {
+        "name": "Prince of Drive",
+        "category": "DRV"
+      },
+      "parameter": "Gain",
+      "value": 24
+    },
+    {
+      "type": "set_parameter",
+      "slot": 1,
+      "effect": {
+        "name": "Prince of Drive",
+        "category": "DRV"
+      },
+      "parameter": "Tone",
+      "value": 42
+    },
+    {
+      "type": "set_parameter",
+      "slot": 1,
+      "effect": {
+        "name": "Prince of Drive",
+        "category": "DRV"
+      },
+      "parameter": "Volume",
+      "value": 52
+    },
+    {
+      "type": "set_parameter",
+      "slot": 1,
+      "effect": {
+        "name": "Prince of Drive",
+        "category": "DRV"
+      },
+      "parameter": "Mode",
+      "value": 1
+    },
+    {
+      "type": "set_parameter",
+      "slot": 1,
+      "effect": {
+        "name": "Prince of Drive",
+        "category": "DRV"
+      },
+      "parameter": "HF Trim",
+      "value": 35
+    },
+    {
+      "type": "set_model",
+      "slot": 2,
+      "effect": {
+        "name": "Black Twin",
+        "category": "AMP"
+      },
+      "enabled": true
+    },
+    {
+      "type": "set_parameter",
+      "slot": 2,
+      "effect": {
+        "name": "Black Twin",
+        "category": "AMP"
+      },
+      "parameter": "Volume",
+      "value": 32
+    },
+    {
+      "type": "set_parameter",
+      "slot": 2,
+      "effect": {
+        "name": "Black Twin",
+        "category": "AMP"
+      },
+      "parameter": "Output",
+      "value": 50
+    },
+    {
+      "type": "set_parameter",
+      "slot": 2,
+      "effect": {
+        "name": "Black Twin",
+        "category": "AMP"
+      },
+      "parameter": "Bass",
+      "value": 44
+    },
+    {
+      "type": "set_parameter",
+      "slot": 2,
+      "effect": {
+        "name": "Black Twin",
+        "category": "AMP"
+      },
+      "parameter": "Middle",
+      "value": 52
+    },
+    {
+      "type": "set_parameter",
+      "slot": 2,
+      "effect": {
+        "name": "Black Twin",
+        "category": "AMP"
+      },
+      "parameter": "Treble",
+      "value": 42
+    },
+    {
+      "type": "set_parameter",
+      "slot": 2,
+      "effect": {
+        "name": "Black Twin",
+        "category": "AMP"
+      },
+      "parameter": "Bright",
+      "value": 0
+    },
+    {
+      "type": "set_model",
+      "slot": 3,
+      "effect": {
+        "name": "Black Dlx 1x12 B",
+        "category": "CAB"
+      },
+      "enabled": true
+    },
+    {
+      "type": "set_parameter",
+      "slot": 3,
+      "effect": {
+        "name": "Black Dlx 1x12 B",
+        "category": "CAB"
+      },
+      "parameter": "Mic Type",
+      "value": 0
+    },
+    {
+      "type": "set_parameter",
+      "slot": 3,
+      "effect": {
+        "name": "Black Dlx 1x12 B",
+        "category": "CAB"
+      },
+      "parameter": "Position",
+      "value": 3
+    },
+    {
+      "type": "set_parameter",
+      "slot": 3,
+      "effect": {
+        "name": "Black Dlx 1x12 B",
+        "category": "CAB"
+      },
+      "parameter": "Volume",
+      "value": 50
+    },
+    {
+      "type": "set_parameter",
+      "slot": 3,
+      "effect": {
+        "name": "Black Dlx 1x12 B",
+        "category": "CAB"
+      },
+      "parameter": "Low Cut",
+      "value": 90
+    },
+    {
+      "type": "set_parameter",
+      "slot": 3,
+      "effect": {
+        "name": "Black Dlx 1x12 B",
+        "category": "CAB"
+      },
+      "parameter": "Hi Cut",
+      "value": 8000
+    },
+    {
+      "type": "set_model",
+      "slot": 4,
+      "effect": {
+        "name": "3D Chorus",
+        "category": "MOD"
+      },
+      "enabled": true
+    },
+    {
+      "type": "set_parameter",
+      "slot": 4,
+      "effect": {
+        "name": "3D Chorus",
+        "category": "MOD"
+      },
+      "parameter": "Mix",
+      "value": 12
+    },
+    {
+      "type": "set_parameter",
+      "slot": 4,
+      "effect": {
+        "name": "3D Chorus",
+        "category": "MOD"
+      },
+      "parameter": "Rate",
+      "value": 0.35
+    },
+    {
+      "type": "set_parameter",
+      "slot": 4,
+      "effect": {
+        "name": "3D Chorus",
+        "category": "MOD"
+      },
+      "parameter": "Filter",
+      "value": 44
+    },
+    {
+      "type": "set_parameter",
+      "slot": 4,
+      "effect": {
+        "name": "3D Chorus",
+        "category": "MOD"
+      },
+      "parameter": "Depth L",
+      "value": 22
+    },
+    {
+      "type": "set_parameter",
+      "slot": 4,
+      "effect": {
+        "name": "3D Chorus",
+        "category": "MOD"
+      },
+      "parameter": "Depth C",
+      "value": 16
+    },
+    {
+      "type": "set_parameter",
+      "slot": 4,
+      "effect": {
+        "name": "3D Chorus",
+        "category": "MOD"
+      },
+      "parameter": "Depth R",
+      "value": 22
+    },
+    {
+      "type": "set_parameter",
+      "slot": 4,
+      "effect": {
+        "name": "3D Chorus",
+        "category": "MOD"
+      },
+      "parameter": "Sync",
+      "value": 0
+    },
+    {
+      "type": "set_model",
+      "slot": 5,
+      "effect": {
+        "name": "Analog Delay M",
+        "category": "DLY"
+      },
+      "enabled": true
+    },
+    {
+      "type": "set_parameter",
+      "slot": 5,
+      "effect": {
+        "name": "Analog Delay M",
+        "category": "DLY"
+      },
+      "parameter": "Mix",
+      "value": 17
+    },
+    {
+      "type": "set_parameter",
+      "slot": 5,
+      "effect": {
+        "name": "Analog Delay M",
+        "category": "DLY"
+      },
+      "parameter": "Time",
+      "value": 333
+    },
+    {
+      "type": "set_parameter",
+      "slot": 5,
+      "effect": {
+        "name": "Analog Delay M",
+        "category": "DLY"
+      },
+      "parameter": "Feedback",
+      "value": 22
+    },
+    {
+      "type": "set_parameter",
+      "slot": 5,
+      "effect": {
+        "name": "Analog Delay M",
+        "category": "DLY"
+      },
+      "parameter": "Level",
+      "value": 50
+    },
+    {
+      "type": "set_parameter",
+      "slot": 5,
+      "effect": {
+        "name": "Analog Delay M",
+        "category": "DLY"
+      },
+      "parameter": "Sync",
+      "value": 0
+    },
+    {
+      "type": "set_parameter",
+      "slot": 5,
+      "effect": {
+        "name": "Analog Delay M",
+        "category": "DLY"
+      },
+      "parameter": "Trail",
+      "value": 1
+    },
+    {
+      "type": "set_model",
+      "slot": 6,
+      "effect": {
+        "name": "Small Plate",
+        "category": "RVB"
+      },
+      "enabled": true
+    },
+    {
+      "type": "set_parameter",
+      "slot": 6,
+      "effect": {
+        "name": "Small Plate",
+        "category": "RVB"
+      },
+      "parameter": "Mix",
+      "value": 18
+    },
+    {
+      "type": "set_parameter",
+      "slot": 6,
+      "effect": {
+        "name": "Small Plate",
+        "category": "RVB"
+      },
+      "parameter": "Pre Delay",
+      "value": 25
+    },
+    {
+      "type": "set_parameter",
+      "slot": 6,
+      "effect": {
+        "name": "Small Plate",
+        "category": "RVB"
+      },
+      "parameter": "Decay",
+      "value": 48
+    },
+    {
+      "type": "set_parameter",
+      "slot": 6,
+      "effect": {
+        "name": "Small Plate",
+        "category": "RVB"
+      },
+      "parameter": "Low Damp",
+      "value": 55
+    },
+    {
+      "type": "set_parameter",
+      "slot": 6,
+      "effect": {
+        "name": "Small Plate",
+        "category": "RVB"
+      },
+      "parameter": "Hi Damp",
+      "value": 65
+    },
+    {
+      "type": "set_parameter",
+      "slot": 6,
+      "effect": {
+        "name": "Small Plate",
+        "category": "RVB"
+      },
+      "parameter": "Mod",
+      "value": 18
+    },
+    {
+      "type": "set_parameter",
+      "slot": 6,
+      "effect": {
+        "name": "Small Plate",
+        "category": "RVB"
+      },
+      "parameter": "Trail",
+      "value": 1
+    },
+    {
+      "type": "set_routing_template",
+      "template": "Serial"
+    }
+  ]
+}

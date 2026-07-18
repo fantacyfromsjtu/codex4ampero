@@ -8,16 +8,20 @@ from .constants import (
     MAX_PARAMETER_ID,
     MAX_SCENE_ID,
     MAX_SLOT_ID,
+    ROUTING_TEMPLATE_IDS,
     Command,
 )
 from .errors import PlanValidationError
 from .protocol import (
     EncodedCommand,
     encode_scene,
+    encode_routing_template,
     encode_set_model,
     encode_set_parameter,
     ensure_finite,
 )
+from .preset_save import validate_preset_name
+from .tone_research import ToneResearch
 
 
 @dataclass(frozen=True)
@@ -55,7 +59,20 @@ class SetSceneAction:
     scene: int
 
 
-PlanAction = Union[SetModelAction, SetParameterAction, SetSceneAction]
+@dataclass(frozen=True)
+class SetRoutingTemplateAction:
+    template: str
+    template_id: int
+    expected_before: Optional[str]
+    expected_before_id: Optional[int]
+
+
+PlanAction = Union[
+    SetModelAction,
+    SetParameterAction,
+    SetSceneAction,
+    SetRoutingTemplateAction,
+]
 
 
 @dataclass(frozen=True)
@@ -63,6 +80,10 @@ class TonePlan:
     schema_version: int
     title: str
     reason: str
+    research: Optional[ToneResearch]
+    save_preview_name: Optional[str]
+    target_patch: Optional[str]
+    select_target_patch: bool
     actions: tuple[PlanAction, ...]
 
     @classmethod
@@ -76,6 +97,37 @@ class TonePlan:
             raise PlanValidationError("schema_version must be 1")
         title = str(value.get("title", "Untitled tone change")).strip()
         reason = str(value.get("reason", "")).strip()
+        research_value = value.get("research")
+        research = (
+            ToneResearch.from_dict(research_value)
+            if research_value is not None
+            else None
+        )
+        target_patch_value = value.get("target_patch")
+        target_patch = (
+            str(target_patch_value).strip().upper()
+            if target_patch_value is not None
+            else None
+        )
+        if target_patch == "":
+            target_patch = None
+        save_preview_name_value = value.get("save_preview_name")
+        save_preview_name = (
+            validate_preset_name(save_preview_name_value)
+            if save_preview_name_value is not None
+            else None
+        )
+        if save_preview_name is not None and target_patch is None:
+            raise PlanValidationError(
+                "save_preview_name requires an exact target_patch"
+            )
+        select_target_patch = value.get("select_target_patch", False)
+        if not isinstance(select_target_patch, bool):
+            raise PlanValidationError("select_target_patch must be true or false")
+        if select_target_patch and target_patch is None:
+            raise PlanValidationError(
+                "select_target_patch requires an exact target_patch"
+            )
         raw_actions = value.get("actions")
         if not isinstance(raw_actions, list) or not raw_actions:
             raise PlanValidationError("actions must be a non-empty list")
@@ -84,6 +136,10 @@ class TonePlan:
             schema_version=schema_version,
             title=title,
             reason=reason,
+            research=research,
+            save_preview_name=save_preview_name,
+            target_patch=target_patch,
+            select_target_patch=select_target_patch,
             actions=actions,
         )
 
@@ -97,6 +153,13 @@ class ResolvedAction:
 
     def to_dict(self) -> dict:
         result = self.command.to_dict()
+        if isinstance(self.source, SetRoutingTemplateAction):
+            result["routing_template"] = {
+                "name": self.source.template,
+                "template_id": self.source.template_id,
+                "expected_before": self.source.expected_before,
+                "expected_before_id": self.source.expected_before_id,
+            }
         if self.effect:
             result["effect"] = {
                 "name": self.effect.name,
@@ -157,6 +220,20 @@ def resolve_plan(plan: TonePlan, catalog: EffectCatalog) -> tuple[ResolvedAction
                 description=f"Switch to scene {action.scene + 1}",
             )
             resolved.append(ResolvedAction(action, None, None, command))
+        elif isinstance(action, SetRoutingTemplateAction):
+            command = EncodedCommand(
+                command=Command.ROUTING_TEMPLATE_SELECT,
+                payload=encode_routing_template(action.template_id),
+                description=(
+                    (
+                        f"Set routing template from {action.expected_before} "
+                        f"to {action.template}"
+                    )
+                    if action.expected_before
+                    else f"Set routing template to {action.template}"
+                ),
+            )
+            resolved.append(ResolvedAction(action, None, None, command))
         else:
             raise PlanValidationError(f"unsupported action: {action}")
     return tuple(resolved)
@@ -198,6 +275,24 @@ def _parse_action(value: dict) -> PlanAction:
         if not 0 <= scene <= MAX_SCENE_ID:
             raise PlanValidationError(f"scene must be between 0 and {MAX_SCENE_ID}")
         return SetSceneAction(scene=scene)
+    if action_type == "set_routing_template":
+        template, template_id = _routing_template(value.get("template"), "template")
+        expected_before = None
+        expected_before_id = None
+        if value.get("expected_before") is not None:
+            expected_before, expected_before_id = _routing_template(
+                value.get("expected_before"), "expected_before"
+            )
+        if expected_before_id is not None and template_id == expected_before_id:
+            raise PlanValidationError(
+                "set_routing_template.template must differ from expected_before"
+            )
+        return SetRoutingTemplateAction(
+            template=template,
+            template_id=template_id,
+            expected_before=expected_before,
+            expected_before_id=expected_before_id,
+        )
     raise PlanValidationError(f"unsupported action type: {action_type}")
 
 
@@ -212,3 +307,19 @@ def _mapping(value, field: str) -> dict:
     if not isinstance(value, dict):
         raise PlanValidationError(f"{field} must be an object")
     return value
+
+
+def _routing_template(value, field: str) -> tuple[str, int]:
+    normalized = str(value or "").strip().lower()
+    if normalized not in ROUTING_TEMPLATE_IDS:
+        supported = ", ".join(ROUTING_TEMPLATE_IDS)
+        raise PlanValidationError(f"{field} must be one of: {supported}")
+    template_id = ROUTING_TEMPLATE_IDS[normalized]
+    display_name = {
+        "parallel": "Parallel",
+        "split->mix": "Split->Mix",
+        "a/b->y": "A/B->Y",
+        "y->a/b": "Y->A/B",
+        "serial": "Serial",
+    }[normalized]
+    return display_name, template_id

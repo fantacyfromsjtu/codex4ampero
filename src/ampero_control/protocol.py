@@ -66,6 +66,24 @@ def encode_scene(scene_id: int) -> bytes:
     return pack_int(scene_id, 1)
 
 
+def encode_routing_template(template_id: int) -> bytes:
+    return pack_int(template_id, 4)
+
+
+def encode_fixed_utf8(value: str, length: int) -> bytes:
+    encoded = value.encode("utf-8")
+    if len(encoded) > length:
+        raise ValueError(
+            f"UTF-8 value is {len(encoded)} bytes; maximum is {length} bytes"
+        )
+    return encoded + bytes(length - len(encoded))
+
+
+def decode_zero_terminated_utf8(data: bytes) -> str:
+    value = data.split(b"\x00", 1)[0]
+    return value.decode("utf-8")
+
+
 @dataclass(frozen=True)
 class ReceivedMessage:
     address: int

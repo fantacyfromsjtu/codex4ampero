@@ -8,11 +8,19 @@ $bridgeRoot = Join-Path $projectRoot "bridge"
 $output = Join-Path $projectRoot ".tools\ampero_bridge.exe"
 
 if (-not $DartExe) {
-    $DartExe = Join-Path $projectRoot ".tools\dart-sdk\bin\dart.exe"
+    $localDart = Join-Path $projectRoot ".tools\dart-sdk\bin\dart.exe"
+    if (Test-Path $localDart) {
+        $DartExe = $localDart
+    } else {
+        $pathDart = Get-Command dart -ErrorAction SilentlyContinue
+        if ($pathDart) {
+            $DartExe = $pathDart.Source
+        }
+    }
 }
 
-if (-not (Test-Path $DartExe)) {
-    throw "Dart SDK not found at $DartExe"
+if (-not $DartExe -or -not (Test-Path $DartExe)) {
+    throw "Dart SDK not found. Install Dart, add dart.exe to PATH, or pass -DartExe."
 }
 
 Push-Location $bridgeRoot

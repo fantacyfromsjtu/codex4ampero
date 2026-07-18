@@ -8,6 +8,8 @@
   with the official editor.
 - `src/ampero_control/plan.py`: converts human-reviewed JSON plans into
   catalog-resolved protocol commands.
+- `src/ampero_control/tone_research.py`: validates traceable research sources,
+  sourced facts, tone inferences, limitations, dates, and confidence levels.
 - `src/ampero_control/safety.py`: blocks unsupported ranges and
   output-sensitive values.
 - `src/ampero_control/native.py`: loads the vendor DLL for installation
@@ -23,6 +25,8 @@
 - `src/ampero_control/controller.py`: reads live snapshots, performs preflight
   reads, writes a journal, applies commands sequentially, and rolls back after a
   failed write sequence.
+- `src/ampero_control/preset_save.py`: prepares exact-target, journal-bound preset
+  save previews and the official 21-byte save payload.
 - `src/ampero_control/cli.py`: JSON-oriented process boundary used by Codex and
   tests.
 
@@ -54,5 +58,5 @@ installation.
 
 The Codex Skill is the user-facing agent. The Python CLI and compiled Dart bridge
 are internal, testable process boundaries rather than a redundant chat UI or a
-general-purpose `amperoctl.exe`. An MCP server could later wrap the same package
+general-purpose device shell. An MCP server could later wrap the same package
 for persistent typed tools, but it should not duplicate protocol or safety logic.

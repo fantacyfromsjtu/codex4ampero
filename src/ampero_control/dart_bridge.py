@@ -114,6 +114,36 @@ class DartBridgeTransport:
         )
         return int(response["message_id"])
 
+    def send_and_wait(
+        self,
+        address: int,
+        response_address: int,
+        data: bytes,
+        flag: MessageFlag,
+        timeout: float = 3.0,
+    ) -> tuple[int, ReceivedMessage]:
+        response = self._call(
+            {
+                "op": "send_and_wait",
+                "address": int(address),
+                "response_address": int(response_address),
+                "data_hex": data.hex(),
+                "flag": int(flag),
+                "timeout_ms": max(1, int(timeout * 1000)),
+            },
+            timeout=timeout + 1.0,
+        )
+        return int(response["message_id"]), ReceivedMessage(
+            address=int(response["address"]),
+            data=bytes(int(value) for value in response.get("data", [])),
+            flag=int(response["flag"]),
+            received_at=0.0,
+        )
+
+    def diagnostics_trace(self) -> dict:
+        response = self._call({"op": "diagnostics"}, timeout=3.0)
+        return dict(response.get("trace", {}))
+
     def _ensure_started(self) -> None:
         if self._process and self._process.poll() is None:
             return

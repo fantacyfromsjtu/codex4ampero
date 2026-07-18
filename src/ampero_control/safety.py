@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import Iterable
 
 from .errors import PlanValidationError
-from .plan import ResolvedAction, SetParameterAction
+from .plan import ResolvedAction, SetParameterAction, SetRoutingTemplateAction
 
 
 SENSITIVE_LEVEL_NAMES = {
@@ -27,6 +27,11 @@ def validate_actions(actions: Iterable[ResolvedAction]) -> SafetyReport:
     warnings = []
     for resolved in actions:
         source = resolved.source
+        if isinstance(source, SetRoutingTemplateAction):
+            warnings.append(
+                "routing template changes signal flow; verify output at low volume"
+            )
+            continue
         if not isinstance(source, SetParameterAction):
             continue
         parameter = resolved.parameter

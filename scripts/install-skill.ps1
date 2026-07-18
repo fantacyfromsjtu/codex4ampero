@@ -19,7 +19,7 @@ if (Test-Path $destination) {
 New-Item -ItemType Directory -Path $destinationRoot -Force | Out-Null
 Copy-Item -LiteralPath $source -Destination $destination -Recurse
 
-[Environment]::SetEnvironmentVariable("VIBE_AMPERO_ROOT", $projectRoot, "User")
+[Environment]::SetEnvironmentVariable("CODEX4AMPERO_ROOT", $projectRoot, "User")
 Write-Output "Installed ampero-tone skill to $destination"
-Write-Output "Set user environment variable VIBE_AMPERO_ROOT=$projectRoot"
+Write-Output "Set user environment variable CODEX4AMPERO_ROOT=$projectRoot"
 Write-Output "Restart Codex before using the skill."

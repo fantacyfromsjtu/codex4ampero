@@ -22,8 +22,10 @@ $python = if ($env:AMPERO_PYTHON) {
 
 & $python .\skills\ampero-tone\scripts\ampero.py --json doctor --scan
 & $python .\skills\ampero-tone\scripts\ampero.py --json device snapshot --include-parameters
+& $python .\skills\ampero-tone\scripts\ampero.py --json device routing --timeout 5
 & $python .\skills\ampero-tone\scripts\ampero.py --json catalog search "clean" --category AMP
 & $python .\skills\ampero-tone\scripts\ampero.py --json plan preview .\examples\clear-rhythm.plan.json
+& $python .\skills\ampero-tone\scripts\ampero.py --json plan save .\.ampero_journals\APPLY.journal.json --name "My Preset"
 ```
 
 ## Tests
@@ -41,8 +43,8 @@ $env:AMPERO_PYTHON = "C:\Path\To\python.exe"
 
 ## Dart Bridge
 
-The build script defaults to `.tools/dart-sdk/bin/dart.exe` under the project
-root. A different SDK can be supplied explicitly:
+The build script first checks `.tools/dart-sdk/bin/dart.exe`, then `dart.exe` on
+`PATH`. A different SDK can be supplied explicitly:
 
 ```powershell
 .\scripts\build-bridge.ps1 -DartExe C:\Path\To\dart.exe

@@ -104,7 +104,7 @@ void _receiveCallback(
 
 @pragma('vm:entry-point')
 void _stateCallback(Pointer<Void> device, int state) {
-  _activeBridge?._states.add(state);
+  _activeBridge?._recordState(state);
 }
 
 @pragma('vm:entry-point')
@@ -114,7 +114,7 @@ void _sendCallback(
   int event,
   int address,
 ) {
-  _activeBridge?._sendEvents.add({
+  _activeBridge?._recordSendEvent({
     'message_id': messageId,
     'event': event,
     'address': address,
@@ -128,6 +128,13 @@ class DeviceMessage {
   final int address;
   final List<int> data;
   final int flag;
+}
+
+class SendResponse {
+  SendResponse({required this.messageId, required this.message});
+
+  final int messageId;
+  final DeviceMessage message;
 }
 
 class AmperoBridge {
@@ -167,6 +174,9 @@ class AmperoBridge {
   final StreamController<Map<String, int>> _sendEvents =
       StreamController<Map<String, int>>.broadcast();
   final Map<int, List<Completer<DeviceMessage>>> _pending = {};
+  final List<int> _stateHistory = [];
+  final List<Map<String, int>> _sendHistory = [];
+  final List<Map<String, dynamic>> _messageHistory = [];
 
   Completer<List<int>>? _inputScan;
   Completer<List<int>>? _outputScan;
@@ -296,6 +306,24 @@ class AmperoBridge {
     }
   }
 
+  Future<SendResponse> sendAndWait(
+    int sendAddress,
+    int responseAddress, {
+    List<int> payload = const [],
+    int flag = sendFlag,
+    Duration timeout = const Duration(seconds: 3),
+  }) async {
+    final completer = Completer<DeviceMessage>();
+    _pending.putIfAbsent(responseAddress, () => []).add(completer);
+    try {
+      final messageId = sendMessage(sendAddress, payload: payload, flag: flag);
+      final message = await completer.future.timeout(timeout);
+      return SendResponse(messageId: messageId, message: message);
+    } finally {
+      _pending[responseAddress]?.remove(completer);
+    }
+  }
+
   void _handleNativeMessage(dynamic message) {
     if (message is! List || message.length < 4) {
       return;
@@ -336,10 +364,34 @@ class AmperoBridge {
   }
 
   void _completeMessage(DeviceMessage message) {
+    _messageHistory.add({
+      'address': message.address,
+      'flag': message.flag,
+      'data_size': message.data.length,
+      'data_hex': _bytesToHex(message.data.take(64).toList()),
+    });
     final pending = _pending[message.address];
     if (pending != null && pending.isNotEmpty && !pending.first.isCompleted) {
       pending.first.complete(message);
     }
+  }
+
+  void _recordState(int state) {
+    _stateHistory.add(state);
+    _states.add(state);
+  }
+
+  void _recordSendEvent(Map<String, int> event) {
+    _sendHistory.add(event);
+    _sendEvents.add(event);
+  }
+
+  Map<String, dynamic> diagnosticsTrace() {
+    return {
+      'states': List<int>.from(_stateHistory),
+      'send_events': List<Map<String, int>>.from(_sendHistory),
+      'messages': List<Map<String, dynamic>>.from(_messageHistory),
+    };
   }
 
   Future<void> close() async {
@@ -430,6 +482,34 @@ Future<void> _serve(AmperoBridge bridge, Map<String, List<int>> scan) async {
                 'id': id,
                 'ok': true,
                 'message_id': messageId,
+          })}',
+        );
+      } else if (operation == 'send_and_wait') {
+        final timeoutMs = (decoded['timeout_ms'] as int?) ?? 3000;
+        final result = await bridge.sendAndWait(
+          decoded['address'] as int,
+          decoded['response_address'] as int,
+          payload: _hexToBytes((decoded['data_hex'] as String?) ?? ''),
+          flag: (decoded['flag'] as int?) ?? sendFlag,
+          timeout: Duration(milliseconds: timeoutMs),
+        );
+        stdout.writeln(
+          'AMPERO_RESPONSE:${jsonEncode({
+                'id': id,
+                'ok': true,
+                'message_id': result.messageId,
+                'address': result.message.address,
+                'flag': result.message.flag,
+                'data': result.message.data,
+                'data_hex': _bytesToHex(result.message.data),
+              })}',
+        );
+      } else if (operation == 'diagnostics') {
+        stdout.writeln(
+          'AMPERO_RESPONSE:${jsonEncode({
+                'id': id,
+                'ok': true,
+                'trace': bridge.diagnosticsTrace(),
               })}',
         );
       } else if (operation == 'close') {

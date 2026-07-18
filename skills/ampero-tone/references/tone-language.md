@@ -14,4 +14,6 @@ Use these as conservative directional heuristics, not fixed recipes.
 | Tighter metal rhythm | Reduce preamp low end, use a low-gain overdrive boost, moderate amp gain, controlled gate, and short ambience. |
 | Clean Japanese pop rhythm | Low-to-moderate compression, articulate clean amp, restrained chorus, short delay, and low reverb mix. |
 
-Ask about guitar/pickups, monitoring path, tuning, and musical role only when those facts materially change the plan. Prefer one concise question at a time.
+For tone-design requests, collect missing guitar/pickup context first and missing
+output/monitoring context second. Ask one concise question at a time. Ask about
+tuning and musical role only when those facts materially change the plan.

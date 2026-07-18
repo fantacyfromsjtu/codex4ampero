@@ -3,14 +3,27 @@ requires = ["setuptools>=61"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "ampero-control"
-version = "0.1.0"
-description = "Codex-native control layer for HOTONE Ampero II devices"
+name = "codex4ampero"
+version = "0.2.0"
+description = "Codex-native tone research and safe local control for HOTONE Ampero II Stomp"
 readme = "README.md"
 requires-python = ">=3.9"
 dependencies = []
+keywords = ["codex", "guitar", "ampero", "hotone", "effects", "midi"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Environment :: Win32 (MS Windows)",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Multimedia :: Sound/Audio",
+]
 
 [project.scripts]
+codex4ampero = "ampero_control.cli:main"
 ampero-control = "ampero_control.cli:main"
 
 [tool.setuptools]

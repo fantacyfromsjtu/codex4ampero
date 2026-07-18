@@ -1,3 +1,4 @@
+import math
 import struct
 from typing import Optional
 
@@ -11,6 +12,10 @@ DEFAULT_AUTHOR_SIZE = 20
 DEFAULT_INFO_SIZE = 50
 DEFAULT_TYPE_SIZE = 10
 DEFAULT_SCENE_NAME_SIZE = 8
+DEFAULT_EFFECT_CHAIN_COUNT = 2
+DEFAULT_INPUT_SOURCE_COUNT = 7
+DEFAULT_INPUT_SOURCE_PARAMETER_COUNT = 4
+DEFAULT_NODE_PARAMETER_COUNT = 10
 
 
 def parse_current_preset(
@@ -22,7 +27,7 @@ def parse_current_preset(
 ) -> dict:
     if len(data) < 12:
         raise PresetFormatError("current-preset payload is too short")
-    preset_index = _signed(data[0:4])
+    preset_payload_header = _signed(data[0:4])
     blocks = _parse_blocks(data[4:])
     define = blocks.get(0)
     effect_data = blocks.get(4)
@@ -53,6 +58,7 @@ def parse_current_preset(
     info = _parse_info(blocks.get(1, b""))
     effect = _parse_effect(effect_data, slot_num)
     scenes = _parse_scenes(scene_data, scene_num, slot_num) if scene_data else {}
+    routing = _parse_routing(blocks.get(6, b""))
     selected_scene = min(max(current_scene, 0), scene_num - 1)
     states = scenes.get("states", [])
     parameters = scenes.get("parameters", [])
@@ -103,9 +109,9 @@ def parse_current_preset(
             slot["catalog_match"] = False
         slots.append(slot)
 
-    return {
+    result = {
         "device": "Ampero II Stomp",
-        "preset_index": preset_index,
+        "preset_payload_header": preset_payload_header,
         "preset_name": info.get("name", ""),
         "preset_author": info.get("author", ""),
         "preset_info": info.get("info", ""),
@@ -117,6 +123,9 @@ def parse_current_preset(
         "dimensions": dimensions,
         "slots": slots,
     }
+    if routing:
+        result["routing"] = routing
+    return result
 
 
 def _parse_blocks(data: bytes) -> dict[int, bytes]:
@@ -218,6 +227,163 @@ def _parse_scenes(data: bytes, scene_num: int, slot_num: int) -> dict:
         "empty_flags": empty_flags,
         "names": names,
     }
+
+
+def _parse_routing(data: bytes) -> dict:
+    source_bytes = DEFAULT_EFFECT_CHAIN_COUNT * 2
+    source_parameter_count = (
+        DEFAULT_EFFECT_CHAIN_COUNT
+        * DEFAULT_INPUT_SOURCE_COUNT
+        * DEFAULT_INPUT_SOURCE_PARAMETER_COUNT
+    )
+    source_parameter_bytes = source_parameter_count * 4
+    node_parameter_bytes = DEFAULT_NODE_PARAMETER_COUNT * 4
+    required = (
+        source_bytes * 2
+        + source_parameter_bytes * 2
+        + 4
+        + node_parameter_bytes * 2
+    )
+    if not data:
+        return {}
+    if len(data) < required:
+        raise PresetFormatError(
+            f"routing block is {len(data)} bytes; expected at least {required}"
+        )
+    offset = 0
+    input_sources = list(
+        struct.unpack_from(f"<{DEFAULT_EFFECT_CHAIN_COUNT}h", data, offset)
+    )
+    offset += source_bytes
+    output_sources = list(
+        struct.unpack_from(f"<{DEFAULT_EFFECT_CHAIN_COUNT}h", data, offset)
+    )
+    offset += source_bytes + source_parameter_bytes * 2
+    split_node_address, mix_node_address, split_mode, mix_mode = struct.unpack_from(
+        "<bbbb", data, offset
+    )
+    offset += 4
+    split_parameters = list(
+        struct.unpack_from(f"<{DEFAULT_NODE_PARAMETER_COUNT}f", data, offset)
+    )
+    offset += node_parameter_bytes
+    mix_parameters = list(
+        struct.unpack_from(f"<{DEFAULT_NODE_PARAMETER_COUNT}f", data, offset)
+    )
+    template_name, template_id = _routing_template_from_nodes(
+        split_node_address, mix_node_address
+    )
+    return {
+        "template": template_name,
+        "template_id": template_id,
+        "effect_chain_count": DEFAULT_EFFECT_CHAIN_COUNT,
+        "input_sources": input_sources,
+        "output_sources": output_sources,
+        "split_node_address": split_node_address,
+        "mix_node_address": mix_node_address,
+        "split_mode": split_mode,
+        "mix_mode": mix_mode,
+        "split_parameters": [_finite_or_none(value) for value in split_parameters],
+        "mix_parameters": [_finite_or_none(value) for value in mix_parameters],
+    }
+
+
+def parse_routing_template_response(data: bytes) -> dict:
+    if len(data) < 16:
+        raise PresetFormatError("routing template response is shorter than 16 bytes")
+    template_id = _signed(data[0:4])
+    routing_data = data[16:]
+    routing = (
+        _parse_routing(routing_data)
+        if len(routing_data) >= 540
+        else _parse_compact_routing(routing_data)
+    )
+    routing["response_template_id"] = template_id
+    return routing
+
+
+def _parse_compact_routing(data: bytes) -> dict:
+    source_bytes = DEFAULT_EFFECT_CHAIN_COUNT * 2
+    selected_source_parameter_count = (
+        DEFAULT_EFFECT_CHAIN_COUNT * DEFAULT_INPUT_SOURCE_PARAMETER_COUNT
+    )
+    selected_source_parameter_bytes = selected_source_parameter_count * 4
+    node_parameter_bytes = DEFAULT_NODE_PARAMETER_COUNT * 4
+    required = (
+        source_bytes * 2
+        + selected_source_parameter_bytes * 2
+        + 4
+        + node_parameter_bytes * 2
+    )
+    if len(data) < required:
+        raise PresetFormatError(
+            f"compact routing block is {len(data)} bytes; expected at least {required}"
+        )
+    offset = 0
+    input_sources = list(
+        struct.unpack_from(f"<{DEFAULT_EFFECT_CHAIN_COUNT}h", data, offset)
+    )
+    offset += source_bytes
+    output_sources = list(
+        struct.unpack_from(f"<{DEFAULT_EFFECT_CHAIN_COUNT}h", data, offset)
+    )
+    offset += source_bytes
+    input_parameters = list(
+        struct.unpack_from(f"<{selected_source_parameter_count}f", data, offset)
+    )
+    offset += selected_source_parameter_bytes
+    output_parameters = list(
+        struct.unpack_from(f"<{selected_source_parameter_count}f", data, offset)
+    )
+    offset += selected_source_parameter_bytes
+    split_node_address, mix_node_address, split_mode, mix_mode = struct.unpack_from(
+        "<bbbb", data, offset
+    )
+    offset += 4
+    split_parameters = list(
+        struct.unpack_from(f"<{DEFAULT_NODE_PARAMETER_COUNT}f", data, offset)
+    )
+    offset += node_parameter_bytes
+    mix_parameters = list(
+        struct.unpack_from(f"<{DEFAULT_NODE_PARAMETER_COUNT}f", data, offset)
+    )
+    template_name, topology_template_id = _routing_template_from_nodes(
+        split_node_address, mix_node_address
+    )
+    return {
+        "template": template_name,
+        "template_id": topology_template_id,
+        "effect_chain_count": DEFAULT_EFFECT_CHAIN_COUNT,
+        "input_sources": input_sources,
+        "output_sources": output_sources,
+        "input_parameters": [_finite_or_none(value) for value in input_parameters],
+        "output_parameters": [_finite_or_none(value) for value in output_parameters],
+        "split_node_address": split_node_address,
+        "mix_node_address": mix_node_address,
+        "split_mode": split_mode,
+        "mix_mode": mix_mode,
+        "split_parameters": [_finite_or_none(value) for value in split_parameters],
+        "mix_parameters": [_finite_or_none(value) for value in mix_parameters],
+    }
+
+
+def _routing_template_from_nodes(
+    split_node_address: int, mix_node_address: int
+) -> tuple[str, Optional[int]]:
+    templates = {
+        (-1, -1): ("Parallel", 0),
+        (0, 6): ("Split->Mix", 1),
+        (-1, 6): ("A/B->Y", 2),
+        (0, -1): ("Y->A/B", 3),
+        (6, -1): ("Serial", 4),
+    }
+    return templates.get(
+        (split_node_address, mix_node_address), ("Custom", None)
+    )
+
+
+def _finite_or_none(value: float) -> Optional[float]:
+    return value if math.isfinite(value) else None
 
 
 def _signed(data: bytes) -> int:
