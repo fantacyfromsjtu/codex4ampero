@@ -160,6 +160,8 @@ Codex 的登录和认证方式以 OpenAI 官方文档为准。
 
 ## 安装
 
+**推荐食用方法：直接把仓库clone下来让codex自己装**
+
 ### 1. 克隆仓库
 
 将下面的 `YOUR_USERNAME` 替换为实际 GitHub 用户名：
